@@ -10,6 +10,19 @@
 #include <opcode.h>
 #include <stdbool.h>
 
+void _Log(char *buf, int len, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  int ret = vsnprintf(buf, 1000, fmt, app);
+  va_end(ap);
+}
+
+#define Log(fmt, ...) do {
+  char buf[1000] = { 0 };\
+  _Log(buf, 1000, fmt, ##__VA_ARGS__);\
+  printf("%s:%d %s\n", __FILE__, __LINE__. buf);
+} while(0)
+
 PyObject* guard_error_hook = NULL;
 const char* cache_lookup_profiler_str = "TorchDynamo Cache Lookup";
 
@@ -254,7 +267,7 @@ static inline PyObject* call_callback(
     PyObject* locals,
     CacheEntry* cache_entry,
     FrameState* frame_state) {
-
+  Log("**************** call_callback ********************")
 // remember to update the type signature for DynamoCallbackFn.__call__ in torch/_dynamo/types.py
 // if this function changes
 #if IS_PYTHON_3_11_PLUS
