@@ -18,7 +18,7 @@ void _Log(char *buf, int len, const char *fmt, ...) {
   va_end(ap);
 }
 
-#define Log(fmt, ...) do {
+#define Log(fmt, ...) do {\
   char buf[1000] = { 0 };\
   _Log(buf, 1000, fmt, ##__VA_ARGS__);\
   printf("%s:%d %s\n", __FILE__, __LINE__. buf);
