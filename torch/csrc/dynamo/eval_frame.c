@@ -9,11 +9,12 @@
 #include <torch/csrc/utils/python_compat.h>
 #include <opcode.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 void _Log(char *buf, int len, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  int ret = vsnprintf(buf, 1000, fmt, app);
+  int ret = vsnprintf(buf, 1000, fmt, ap);
   va_end(ap);
 }
 
