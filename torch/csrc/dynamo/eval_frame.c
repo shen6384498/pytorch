@@ -268,7 +268,7 @@ static inline PyObject* call_callback(
     PyObject* locals,
     CacheEntry* cache_entry,
     FrameState* frame_state) {
-  Log("**************** call_callback ********************")
+  Log("**************** call_callback ********************");
 // remember to update the type signature for DynamoCallbackFn.__call__ in torch/_dynamo/types.py
 // if this function changes
 #if IS_PYTHON_3_11_PLUS
