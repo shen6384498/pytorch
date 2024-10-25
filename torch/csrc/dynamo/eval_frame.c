@@ -193,11 +193,14 @@ static PyObject* custom_eval_frame_shim(
     PyThreadState* tstate,
     THP_EVAL_API_FRAME_OBJECT* frame,
     int throw_flag) {
+  
+  Log("******************* custom_eval_frame_shim ********************");
   return _custom_eval_frame_shim(tstate, frame, throw_flag);
 }
 #else
 static PyObject* custom_eval_frame_shim(THP_EVAL_API_FRAME_OBJECT* frame, int throw_flag) {
   PyThreadState* tstate = PyThreadState_GET();
+  Log("******************* custom_eval_frame_shim ********************");
   return _custom_eval_frame_shim(tstate, frame, throw_flag);
 }
 #endif
@@ -227,12 +230,14 @@ inline static void enable_eval_frame_shim(PyThreadState* tstate) {
       &custom_eval_frame_shim) {
     DEBUG_CHECK(previous_eval_frame == NULL);
     previous_eval_frame = _PyInterpreterState_GetEvalFrameFunc(tstate->interp);
+    Log("******************* enable_eval_frame_shim ********************");
     _PyInterpreterState_SetEvalFrameFunc(tstate->interp,
                                          &custom_eval_frame_shim);
   }
 #else
   if (tstate->interp->eval_frame != &custom_eval_frame_shim) {
     // First call
+    Log("******************* enable_eval_frame_shim ********************");
     tstate->interp->eval_frame = &custom_eval_frame_shim;
   }
 #endif
@@ -515,6 +520,7 @@ static PyObject* _custom_eval_frame_shim(
     PyThreadState* tstate,
     THP_EVAL_API_FRAME_OBJECT* frame,
     int throw_flag) {
+  Log("******************* _custom_eval_frame_shim ********************");
   // Shims logic into one of three states. Can probably be refactored into a
   // single func, later:
   //  - None: disables TorchDynamo
@@ -549,6 +555,7 @@ static PyObject* _custom_eval_frame(
     int throw_flag,
     PyObject* callback,
     int* should_clear_frame) {
+  Log("******************* _custom_eval_frame ********************");
 #if IS_PYTHON_3_11_PLUS
   DEBUG_TRACE(
       "begin %s %s %i %i",
