@@ -631,7 +631,7 @@ class OptimizeContext(_TorchDynamoContext):
             Callable[[], Union[OptimizeContext, _NullDecorator]]
         ] = None,
     ) -> None:
-        def  ():
+        def on_enter():
             install_generation_tagging_init()
 
         super().__init__(
