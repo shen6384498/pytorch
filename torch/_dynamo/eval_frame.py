@@ -116,6 +116,7 @@ def _maybe_set_eval_frame(callback: DynamoCallback):
         )
         return callback
     else:
+        print("********************* call eval frame ********************")
         return set_eval_frame(callback)
 
 

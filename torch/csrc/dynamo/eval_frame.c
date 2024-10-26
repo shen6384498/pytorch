@@ -41,6 +41,7 @@ inline static PyObject* eval_frame_callback_get(void) {
 }
 
 inline static void eval_frame_callback_set(PyObject* obj) {
+  Log("*************** eval_frame_callback_set *******************");
   PyThread_tss_set(&eval_frame_callback_key, obj);
 }
 
