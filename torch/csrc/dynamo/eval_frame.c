@@ -595,7 +595,7 @@ static PyObject* _custom_eval_frame(
     DEBUG_TRACE("throw %s", get_frame_name(frame));
     return eval_frame_default(tstate, frame, throw_flag);
   }
-
+  Log("*************************************");
   ExtraState* extra = get_extra_state(F_CODE(frame));
   if (extra == SKIP_CODE || (callback == Py_False && extra == NULL)) {
     DEBUG_TRACE("skip %s", get_frame_name(frame));
