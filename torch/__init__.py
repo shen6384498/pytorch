@@ -2247,7 +2247,7 @@ class _TorchCompileInductorWrapper:
 
     def __call__(self, model_, inputs_):
         from torch._inductor.compile_fx import compile_fx
-
+        print("************* _TorchCompileInductorWrapper call __call__")
         return compile_fx(model_, inputs_, config_patches=self.config)
 
     def get_compiler_config(self):
@@ -2463,10 +2463,11 @@ def compile(
         backend = bisect_backend
     print("***************** backend :", backend)
     if backend == "inductor":
+        print("******************* pre _TorchCompileInductorWrapper")
         backend = _TorchCompileInductorWrapper(mode, options, dynamic)
     else:
         backend = _TorchCompileWrapper(backend, mode, options, dynamic)
-
+    print("*********************** pre torch dynamo optimize")
     return torch._dynamo.optimize(
         backend=backend,
         nopython=fullgraph,
