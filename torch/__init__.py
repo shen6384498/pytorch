@@ -2468,12 +2468,14 @@ def compile(
     else:
         backend = _TorchCompileWrapper(backend, mode, options, dynamic)
     print("*********************** pre torch dynamo optimize")
-    return torch._dynamo.optimize(
+    aaa = torch._dynamo.optimize(
         backend=backend,
         nopython=fullgraph,
         dynamic=dynamic,
         disable=disable,
     )(model)  # type: ignore[return-value]
+    print("*********************** post torch dynamo optimize")
+    return aaa
 
 
 def _register_device_module(device_type, module):
