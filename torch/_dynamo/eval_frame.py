@@ -631,7 +631,7 @@ class OptimizeContext(_TorchDynamoContext):
             Callable[[], Union[OptimizeContext, _NullDecorator]]
         ] = None,
     ) -> None:
-        def on_enter():
+        def  ():
             install_generation_tagging_init()
 
         super().__init__(
@@ -878,7 +878,8 @@ def _optimize(
     # The backend function is stashed in the callable returned by
     # _optimize_catch_errors in the field _torchdynamo_orig_callable. This can
     # be used by eval_frame.c to insert a guard on the backend.
-    return _optimize_catch_errors(
+    print("****************** pre _optimize_catch_errors")
+    aaa = _optimize_catch_errors(
         convert_frame.convert_frame(backend, hooks=hooks),
         hooks,
         backend_ctx_ctor,
@@ -890,6 +891,8 @@ def _optimize(
         ),
         rebuild_ctx=rebuild_ctx,
     )
+    print("****************** post _optimize_catch_errors")
+    return aaa
 
 
 # TODO(voz): Consider making "explain" output alongside a run / part of a run
