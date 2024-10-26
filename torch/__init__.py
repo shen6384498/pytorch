@@ -2247,8 +2247,10 @@ class _TorchCompileInductorWrapper:
 
     def __call__(self, model_, inputs_):
         from torch._inductor.compile_fx import compile_fx
-        print("************* _TorchCompileInductorWrapper call __call__")
-        return compile_fx(model_, inputs_, config_patches=self.config)
+        print("************* pre _TorchCompileInductorWrapper call __call__")
+        aaa = compile_fx(model_, inputs_, config_patches=self.config)
+        print("************* post _TorchCompileInductorWrapper call __call__")
+        return aaa
 
     def get_compiler_config(self):
         from torch._inductor.compile_fx import get_patched_config_dict
