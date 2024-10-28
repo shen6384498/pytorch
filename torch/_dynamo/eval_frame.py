@@ -455,6 +455,7 @@ class _TorchDynamoContext:
         self.cleanup_fns.clear()
 
     def __call__(self, fn):
+        print("*********************** torch dynamo context start")
         # public api for compiler config/options
         def get_compiler_config():
             return self.compiler_config
@@ -523,6 +524,7 @@ class _TorchDynamoContext:
 
         @functools.wraps(fn)
         def _fn(*args, **kwargs):
+            print("********************************* context fn start")
             if is_fx_tracing():
                 if config.error_on_nested_fx_trace:
                     raise RuntimeError(
@@ -552,7 +554,10 @@ class _TorchDynamoContext:
             )
 
             try:
-                return fn(*args, **kwargs)
+                print("********************************* context fn start")
+                aaa = fn(*args, **kwargs)
+                print("********************************* context fn end")
+                return aaa
             finally:
                 # Restore the dynamic layer stack depth if necessary.
                 torch._C._functorch.pop_dynamic_layer_stack_and_undo_to_depth(
@@ -562,6 +567,8 @@ class _TorchDynamoContext:
                 _maybe_set_eval_frame(prior)
                 for cleanup in cleanups:
                     cleanup()
+            
+            print("********************************* context _fn end")
 
         # hooks to properly handle inlining
         _fn._torchdynamo_inline = fn  # type: ignore[attr-defined]
@@ -614,6 +621,7 @@ class _TorchDynamoContext:
                 )
             always_optimize_code_objects[fn.__code__] = True
 
+        print("*********************** torch dynamo context end")
         return _fn
 
 
