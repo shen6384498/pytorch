@@ -524,7 +524,7 @@ class _TorchDynamoContext:
 
         @functools.wraps(fn)
         def _fn(*args, **kwargs):
-            print("********************************* context fn start")
+            print("********************************* context _fn start")
             if is_fx_tracing():
                 if config.error_on_nested_fx_trace:
                     raise RuntimeError(
@@ -532,7 +532,10 @@ class _TorchDynamoContext:
                         "a dynamo-optimized function. This is not supported at the moment."
                     )
                 else:
-                    return fn(*args, **kwargs)
+                    print("********************************* 1 context fn start")
+                    aaa = fn(*args, **kwargs)
+                    print("********************************* 1 context fn end")
+                    return aaa
 
             if is_jit_tracing():
                 raise RuntimeError(
@@ -554,9 +557,9 @@ class _TorchDynamoContext:
             )
 
             try:
-                print("********************************* context fn start")
+                print("********************************* 2 context fn start")
                 aaa = fn(*args, **kwargs)
-                print("********************************* context fn end")
+                print("********************************* 2 context fn end")
                 return aaa
             finally:
                 # Restore the dynamic layer stack depth if necessary.
