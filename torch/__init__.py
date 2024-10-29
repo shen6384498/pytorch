@@ -2475,8 +2475,11 @@ def compile(
         nopython=fullgraph,
         dynamic=dynamic,
         disable=disable,
-    )(model)  # type: ignore[return-value]
+    )  # type: ignore[return-value]
     print("*********************** post torch dynamo optimize")
+    print("*********************** pre call optimize")
+    bbb = aaa(model)
+    print("*********************** post call optimize")
     return aaa
 
 
