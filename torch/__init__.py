@@ -2480,7 +2480,7 @@ def compile(
     print("*********************** pre call optimize")
     bbb = aaa(model)
     print("*********************** post call optimize")
-    return aaa
+    return bbb
 
 
 def _register_device_module(device_type, module):
