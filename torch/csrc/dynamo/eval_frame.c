@@ -553,6 +553,13 @@ static PyObject* _custom_eval_frame(
     PyObject* callback,
     int* should_clear_frame) {
   Log("******************* _custom_eval_frame ********************");
+  Log(
+      "begin %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
 #if IS_PYTHON_3_11_PLUS
   DEBUG_TRACE(
       "begin %s %s %i %i",
