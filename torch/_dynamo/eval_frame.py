@@ -560,6 +560,7 @@ class _TorchDynamoContext:
                 print("********************************* 2 context fn start")
                 aaa = fn(*args, **kwargs)
                 print("********************************* 2 context fn end")
+                print("********************************* context _fn end")
                 return aaa
             finally:
                 # Restore the dynamic layer stack depth if necessary.
