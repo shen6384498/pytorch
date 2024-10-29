@@ -818,9 +818,15 @@ def optimize(*args, **kwargs):
                 "fullgraph"
             }, f"Only `fullgraph` kwarg override is supported for now, but got {ca_kwargs_override.keys()}"
             kwargs["nopython"] = ca_kwargs_override["fullgraph"]
-        return optimize(*args, **kwargs)
+        print("******************************* pre optimize")
+        aa = optimize(*args, **kwargs)
+        print("******************************* post optimize")
+        return aa
 
-    return _optimize(rebuild_ctx, *args, **kwargs)
+    print("******************************* pre _optimize")
+    aaa = _optimize(rebuild_ctx, *args, **kwargs)
+    print("******************************* post _optimize")
+    return aaa
 
 
 def _optimize(
