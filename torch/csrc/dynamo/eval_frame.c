@@ -41,7 +41,6 @@ inline static PyObject* eval_frame_callback_get(void) {
 }
 
 inline static void eval_frame_callback_set(PyObject* obj) {
-  Log("*************** eval_frame_callback_set *******************");
   PyThread_tss_set(&eval_frame_callback_key, obj);
 }
 
@@ -194,7 +193,6 @@ static PyObject* custom_eval_frame_shim(
     PyThreadState* tstate,
     THP_EVAL_API_FRAME_OBJECT* frame,
     int throw_flag) {
-  
   return _custom_eval_frame_shim(tstate, frame, throw_flag);
 }
 #else
@@ -596,7 +594,7 @@ static PyObject* _custom_eval_frame(
     DEBUG_TRACE("throw %s", get_frame_name(frame));
     return eval_frame_default(tstate, frame, throw_flag);
   }
-  Log("*************************************");
+
   ExtraState* extra = get_extra_state(F_CODE(frame));
   if (extra == SKIP_CODE || (callback == Py_False && extra == NULL)) {
     DEBUG_TRACE("skip %s", get_frame_name(frame));
