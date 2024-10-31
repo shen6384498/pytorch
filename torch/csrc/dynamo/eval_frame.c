@@ -671,7 +671,7 @@ static PyObject* _custom_eval_frame(
     DEBUG_TRACE("cache hit %s", get_frame_name(frame));
     *should_clear_frame = 1;
     Log("****************** cache hit start run **************************");
-    auto aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, 0);
+    PyObject* aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, 0);
     Log("****************** cache hit end run **************************");
     return aa;
   }
@@ -704,7 +704,7 @@ static PyObject* _custom_eval_frame(
     Py_DECREF(locals);
 
     Log("****************** cache hit start run **************************");
-    auto aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, free_vars_copied);
+    PyObject* aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, free_vars_copied);
     Log("****************** cache hit end run **************************");
     return aa;
   }
@@ -758,7 +758,7 @@ static PyObject* _custom_eval_frame(
     eval_frame_callback_set(callback);
     *should_clear_frame = 1;
     Log("****************** start run **************************");
-    auto aa = eval_custom_code(tstate, frame, CacheEntry_get_code(new_cache_entry),
+    PyObject* aa = eval_custom_code(tstate, frame, CacheEntry_get_code(new_cache_entry),
       CacheEntry_get_trace_annotation(new_cache_entry), throw_flag, free_vars_copied);
     Log("****************** end run **************************");
     return aa;
