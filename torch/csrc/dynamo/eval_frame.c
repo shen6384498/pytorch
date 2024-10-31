@@ -670,7 +670,10 @@ static PyObject* _custom_eval_frame(
     // used cached version
     DEBUG_TRACE("cache hit %s", get_frame_name(frame));
     *should_clear_frame = 1;
-    return eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, 0);
+    Log("****************** cache hit start run **************************");
+    auto aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, 0);
+    Log("****************** cache hit end run **************************");
+    return aa;
   }
   DEBUG_CHECK(PyDict_CheckExact(locals));
   DEBUG_CHECK(PyDict_CheckExact(frame->f_globals));
@@ -699,7 +702,11 @@ static PyObject* _custom_eval_frame(
     eval_frame_callback_set(callback);
     *should_clear_frame = 1;
     Py_DECREF(locals);
-    return eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, free_vars_copied);
+
+    Log("****************** cache hit start run **************************");
+    auto aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, free_vars_copied);
+    Log("****************** cache hit end run **************************");
+    return aa;
   }
   // cache miss
   CacheEntry* cache_entry = extract_cache_entry(extra);
@@ -750,8 +757,11 @@ static PyObject* _custom_eval_frame(
     // Re-enable custom behavior
     eval_frame_callback_set(callback);
     *should_clear_frame = 1;
-    return eval_custom_code(tstate, frame, CacheEntry_get_code(new_cache_entry),
+    Log("****************** start run **************************");
+    auto aa = eval_custom_code(tstate, frame, CacheEntry_get_code(new_cache_entry),
       CacheEntry_get_trace_annotation(new_cache_entry), throw_flag, free_vars_copied);
+    Log("****************** end run **************************");
+    return aa;
   } else {
     DEBUG_TRACE("create skip %s", get_frame_name(frame));
     Py_DECREF(result);
