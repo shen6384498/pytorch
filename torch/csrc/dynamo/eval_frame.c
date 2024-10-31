@@ -517,7 +517,6 @@ static PyObject* _custom_eval_frame_shim(
     PyThreadState* tstate,
     THP_EVAL_API_FRAME_OBJECT* frame,
     int throw_flag) {
-  Log("******************* start _custom_eval_frame_shim frame:%s ********************", get_frame_name(frame));
   // Shims logic into one of three states. Can probably be refactored into a
   // single func, later:
   //  - None: disables TorchDynamo
@@ -527,10 +526,10 @@ static PyObject* _custom_eval_frame_shim(
 
   if (callback == Py_None) {
     PyObject * aa = eval_frame_default(tstate, frame, throw_flag);
-    Log("******************* end _custom_eval_frame_shim frame:%s ********************", get_frame_name(frame));
     return aa;
   }
 
+  Log("******************* start _custom_eval_frame_shim frame:%s ********************", get_frame_name(frame));
   int should_clear_frame = 0;
   PyObject* result = _custom_eval_frame(tstate, frame, throw_flag, callback, &should_clear_frame);
   if (should_clear_frame) {
