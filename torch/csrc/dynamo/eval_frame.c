@@ -517,6 +517,7 @@ static PyObject* _custom_eval_frame_shim(
     PyThreadState* tstate,
     THP_EVAL_API_FRAME_OBJECT* frame,
     int throw_flag) {
+  Log("******************* start _custom_eval_frame_shim frame:%s ********************", get_frame_name(frame));
   // Shims logic into one of three states. Can probably be refactored into a
   // single func, later:
   //  - None: disables TorchDynamo
@@ -525,15 +526,17 @@ static PyObject* _custom_eval_frame_shim(
   PyObject* callback = eval_frame_callback_get();
 
   if (callback == Py_None) {
-    return eval_frame_default(tstate, frame, throw_flag);
+    PyObject * aa = eval_frame_default(tstate, frame, throw_flag);
+    Log("******************* end _custom_eval_frame_shim frame:%s ********************", get_frame_name(frame));
+    return aa;
   }
 
-  Log("******************* _custom_eval_frame_shim ********************");
   int should_clear_frame = 0;
   PyObject* result = _custom_eval_frame(tstate, frame, throw_flag, callback, &should_clear_frame);
   if (should_clear_frame) {
     clear_old_frame_if_python_312_plus(tstate, frame);
   }
+    Log("******************* end _custom_eval_frame_shim frame:%s ********************", get_frame_name(frame));
   return result;
 }
 
@@ -599,19 +602,43 @@ static PyObject* _custom_eval_frame(
     // be profitable if there was tensor code in the unwinding code.  Seems
     // unlikely.
     DEBUG_TRACE("throw %s", get_frame_name(frame));
-    return eval_frame_default(tstate, frame, throw_flag);
+    PyObject * aa = eval_frame_default(tstate, frame, throw_flag);
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
+    return aa;
   }
 
   ExtraState* extra = get_extra_state(F_CODE(frame));
   if (extra == SKIP_CODE || (callback == Py_False && extra == NULL)) {
     DEBUG_TRACE("skip %s", get_frame_name(frame));
-    return eval_frame_default(tstate, frame, throw_flag);
+    PyObject* aa = eval_frame_default(tstate, frame, throw_flag);
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
+    return aa;
   }
   if (extra == SKIP_CODE_RECURSIVE) {
     DEBUG_TRACE("skip recursive %s", get_frame_name(frame));
     eval_frame_callback_set(Py_None);
     PyObject* result = eval_frame_default(tstate, frame, throw_flag);
     eval_frame_callback_set(callback);
+    Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
+    
     return result;
   }
 
@@ -627,6 +654,13 @@ static PyObject* _custom_eval_frame(
   if (THP_PyFrame_FastToLocalsWithError(frame, &free_vars_copied) < 0) {
     DEBUG_TRACE("error %s", get_frame_name(frame));
     *should_clear_frame = 1;
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return NULL;
   }
   PyObject *locals = frame->f_locals;
@@ -652,6 +686,13 @@ static PyObject* _custom_eval_frame(
     if (maybe_cached_code == NULL) {
       // guard eval failed, keep propagating
       *should_clear_frame = 1;
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
       return NULL;
     } else if (maybe_cached_code == Py_None) {
       DEBUG_TRACE("cache miss %s", get_frame_name(frame));
@@ -664,6 +705,13 @@ static PyObject* _custom_eval_frame(
       if (extra_state_cache_limit_hit(extra)) {
         eval_frame_callback_set(callback);
       }
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
       return ret;
     }
     PyCodeObject* cached_code = (PyCodeObject*)maybe_cached_code;
@@ -673,6 +721,13 @@ static PyObject* _custom_eval_frame(
     Log("****************** cache hit start run frame %s  **************************", get_frame_name(frame));
     PyObject* aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, 0);
     Log("****************** cache hit end run frame %s  **************************", get_frame_name(frame));
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return aa;
   }
   DEBUG_CHECK(PyDict_CheckExact(locals));
@@ -693,6 +748,13 @@ static PyObject* _custom_eval_frame(
     // Python error
     *should_clear_frame = 1;
     Py_DECREF(locals);
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return NULL;
   } else if (maybe_cached_code != Py_None) {
     PyCodeObject* cached_code = (PyCodeObject*)maybe_cached_code;
@@ -706,6 +768,13 @@ static PyObject* _custom_eval_frame(
     Log("****************** cache hit start run frame %s **************************", get_frame_name(frame));
     PyObject* aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, free_vars_copied);
     Log("****************** cache hit end run frame %s  **************************", get_frame_name(frame));
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return aa;
   }
   // cache miss
@@ -726,6 +795,13 @@ static PyObject* _custom_eval_frame(
     // Dynamo barfs, that's it for Dynamo, even if you catch the exception
     // inside the torch.compile block we won't try to Dynamo anything else.
     *should_clear_frame = 1;
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return NULL;
   } else if (result == skip_code_recursive_flag) {
     // Dynamo returned skip_code_recursive_flag, so we should recursively skip code.
@@ -734,6 +810,13 @@ static PyObject* _custom_eval_frame(
     PyObject* r = eval_frame_default(tstate, frame, throw_flag);
     // Re-enable custom behavior
     eval_frame_callback_set(callback);
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return r;
   } else if (result == cache_limit_hit_flag) {
     // Dynamo returned cache_limit_hit_flag, so we should recursively skip code.
@@ -742,6 +825,13 @@ static PyObject* _custom_eval_frame(
     PyObject* r = eval_frame_default(tstate, frame, throw_flag);
     // Re-enable custom behavior
     eval_frame_callback_set(callback);
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return r;
   } else if (result != Py_None) {
     Log("create cache %s", get_frame_name(frame));
@@ -765,6 +855,13 @@ static PyObject* _custom_eval_frame(
     PyObject* aa = eval_custom_code(tstate, frame, CacheEntry_get_code(new_cache_entry),
       CacheEntry_get_trace_annotation(new_cache_entry), throw_flag, free_vars_copied);
     Log("****************** end run frame %s  **************************", get_frame_name(frame));
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return aa;
   } else {
     DEBUG_TRACE("create skip %s", get_frame_name(frame));
@@ -772,6 +869,13 @@ static PyObject* _custom_eval_frame(
     set_extra_state(F_CODE(frame), SKIP_CODE);
     // Re-enable custom behavior
     eval_frame_callback_set(callback);
+      Log(
+      "end %s %s %i %i %i",
+      get_frame_name(frame),
+      PyUnicode_AsUTF8(F_CODE(frame)->co_filename),
+      frame->f_lineno,
+      frame->f_lasti,
+      frame->f_iblock);
     return eval_frame_default(tstate, frame, throw_flag);
   }
 }
