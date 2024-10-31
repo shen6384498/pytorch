@@ -670,9 +670,9 @@ static PyObject* _custom_eval_frame(
     // used cached version
     DEBUG_TRACE("cache hit %s", get_frame_name(frame));
     *should_clear_frame = 1;
-    Log("****************** cache hit start run **************************");
+    Log("****************** cache hit start run frame %s  **************************", get_frame_name(frame));
     PyObject* aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, 0);
-    Log("****************** cache hit end run **************************");
+    Log("****************** cache hit end run frame %s  **************************", get_frame_name(frame));
     return aa;
   }
   DEBUG_CHECK(PyDict_CheckExact(locals));
@@ -703,16 +703,19 @@ static PyObject* _custom_eval_frame(
     *should_clear_frame = 1;
     Py_DECREF(locals);
 
-    Log("****************** cache hit start run **************************");
+    Log("****************** cache hit start run frame %s **************************", get_frame_name(frame));
     PyObject* aa = eval_custom_code(tstate, frame, cached_code, trace_annotation, throw_flag, free_vars_copied);
-    Log("****************** cache hit end run **************************");
+    Log("****************** cache hit end run frame %s  **************************", get_frame_name(frame));
     return aa;
   }
   // cache miss
   CacheEntry* cache_entry = extract_cache_entry(extra);
   FrameState* frame_state = extract_frame_state(extra);
+  
+  Log("****************** start compile frame %s  **************************", get_frame_name(frame));
   PyObject* result =
       call_callback(callback, frame, locals, cache_entry, frame_state);
+  Log("****************** end compile frame %s  **************************", get_frame_name(frame));
   Py_DECREF(locals);
   if (result == NULL) {
     // internal exception, returning here will leak the exception into user code
@@ -741,6 +744,7 @@ static PyObject* _custom_eval_frame(
     eval_frame_callback_set(callback);
     return r;
   } else if (result != Py_None) {
+    Log("create cache %s", get_frame_name(frame));
     DEBUG_TRACE("create cache %s", get_frame_name(frame));
 
     // NB: We could use extract_cache_entry to get the cache_entry, but
@@ -757,10 +761,10 @@ static PyObject* _custom_eval_frame(
     // Re-enable custom behavior
     eval_frame_callback_set(callback);
     *should_clear_frame = 1;
-    Log("****************** start run **************************");
+    Log("****************** start run frame %s  **************************", get_frame_name(frame));
     PyObject* aa = eval_custom_code(tstate, frame, CacheEntry_get_code(new_cache_entry),
       CacheEntry_get_trace_annotation(new_cache_entry), throw_flag, free_vars_copied);
-    Log("****************** end run **************************");
+    Log("****************** end run frame %s  **************************", get_frame_name(frame));
     return aa;
   } else {
     DEBUG_TRACE("create skip %s", get_frame_name(frame));
