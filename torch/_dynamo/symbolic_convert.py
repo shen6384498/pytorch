@@ -513,9 +513,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                 if push:
                     self.push(value)
                 self.jump(inst)
-        elif (
-            isinstance(value, (TensorVariable)) and self.should_compile_partial_graph()
-        ):
+        elif (isinstance(value, (TensorVariable)) and self.should_compile_partial_graph()):
             print("call jump_graph_break 2")
             jump_graph_break(self, inst, value)
         elif isinstance(value, NNModuleVariable):
@@ -2917,6 +2915,7 @@ class InstructionTranslator(InstructionTranslatorBase):
                 not self.block_stack or entry.target is not self.block_stack[-1].target
             ):
                 return False
+        print("block stack:", self.block_stack)
         for b in self.block_stack:
             print("print block stack:", b.inst.opname)
         return (
