@@ -994,7 +994,7 @@ class OutputGraph:
         Automatically restore live variables.
         """
         assert reason is not None
-
+        print("compile_subgraph enter")
         from .decorators import disable
 
         self.partial_convert = partial_convert
