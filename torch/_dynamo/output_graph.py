@@ -1383,6 +1383,9 @@ class OutputGraph:
                 ),
             )
             self.call_cleanup_hooks()
+            
+            print("compile and call fx graph step 2")
+            self.graph.print_tabular()
             old_fake_mode = self.tracing_context.fake_mode
             if not self.export:
                 import torch._functorch.config as _config
@@ -1425,12 +1428,17 @@ class OutputGraph:
 
             compiled_fn = disable(compiled_fn)
 
+            print("compile and call fx graph step 3")
+            self.graph.print_tabular()
             counters["stats"]["unique_graphs"] += 1
             # This is safe because we pre-process name to be unique
             self.install_global_unsafe(name, compiled_fn)
 
             cg = PyCodegen(tx)
             cg.make_call_generated_code(name)
+            
+            print("compile and call fx graph step 4")
+            self.graph.print_tabular()
             return cg.get_instructions()
 
     @property
