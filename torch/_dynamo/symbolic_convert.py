@@ -2917,6 +2917,8 @@ class InstructionTranslator(InstructionTranslatorBase):
                 not self.block_stack or entry.target is not self.block_stack[-1].target
             ):
                 return False
+        for b in self.block_stack:
+            print("print block stack:", b.inst.opname)
         return (
             all(b.can_restore() for b in self.block_stack)
             and not self.one_graph
