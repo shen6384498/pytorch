@@ -2689,6 +2689,10 @@ class InstructionTranslatorBase(
 
         # Properties of the input/output code
         self.instructions: List[Instruction] = instructions
+        print("************************ inst start ***********************")
+        for inst in self.instructions:
+            print("inst:", inst.opname)
+        print("************************ inst end ***********************")
         self.indexof: Dict[Instruction, int] = get_indexof(self.instructions)
         self.f_locals: Dict[
             str, Any
