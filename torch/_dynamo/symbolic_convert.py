@@ -790,6 +790,7 @@ class InstructionTranslatorBase(
         cur_offset = self.current_instruction.offset
         assert self.instruction_pointer is not None
         for inst in self.instructions[self.instruction_pointer :]:
+            print("check inst:", inst.opname, " jump offset:", inst.argval, " current offset:", cur_offset)
             if inst.opname in ("RETURN_VALUE", "RETURN_CONST"):
                 return False
             if inst.opname in JUMP_OPNAMES:
