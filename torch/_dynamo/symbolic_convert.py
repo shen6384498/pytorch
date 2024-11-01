@@ -795,6 +795,7 @@ class InstructionTranslatorBase(
             if inst.opname in JUMP_OPNAMES:
                 jump_offset = inst.argval
                 if jump_offset < cur_offset:
+                    print("maybe_has_backedge check true for inst:", inst.opname, " all skip name:", JUMP_OPNAMES)
                     return True
         return False
 
