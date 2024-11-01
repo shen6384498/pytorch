@@ -1358,7 +1358,8 @@ class OutputGraph:
 
             # free a bit of memory
             self.real_value_cache.clear()
-
+            print("compile and call fx graph step 1")
+            self.graph.print_tabular()
             gm = _make_graph_module(root, self.graph)
             for register_finalizer in self.register_finalizer_fns:
                 register_finalizer(gm)
