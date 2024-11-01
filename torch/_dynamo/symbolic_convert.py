@@ -990,6 +990,7 @@ class InstructionTranslatorBase(
         if ip is None:
             return False
         self.current_instruction = inst = self.instructions[ip]
+        print("Instruction tanslator print current inst:", self.current_instruction.opname)
         self.instruction_pointer = ip + 1
 
         if inst.starts_line:
