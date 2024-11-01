@@ -786,7 +786,7 @@ class InstructionTranslatorBase(
         # isn't), multiple graphs may be generated if there's a break in the
         # graph during a for loop. In general, its better to have fewer false
         # negatives so that Dynamo does not skip the whole frame.
-
+        print("need skip insts:", JUMP_OPNAMES)
         cur_offset = self.current_instruction.offset
         assert self.instruction_pointer is not None
         for inst in self.instructions[self.instruction_pointer :]:
