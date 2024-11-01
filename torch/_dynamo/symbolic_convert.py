@@ -425,6 +425,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
 
         self.push(value)
         log.debug("generic_jump triggered compile")
+        print("call compile subgraph 5")
         self.output.compile_subgraph(
             self,
             reason=GraphCompileReason(
@@ -655,6 +656,7 @@ def break_graph_if_unsupported(*, push):
             inst: Instruction,
             reason: GraphCompileReason,
         ):
+            print("call compile subgraph 4")
             self.output.compile_subgraph(self, reason=reason)
             cg = PyCodegen(self)
             cleanup: List[Instruction] = []
@@ -1079,6 +1081,7 @@ class InstructionTranslatorBase(
         # generate code from checkpoint
         assert not self.output.output_instructions
         assert self.current_speculation is not None
+        print("call compile subgraph 3")
         self.output.compile_subgraph(
             self,
             partial_convert=True,
@@ -1890,6 +1893,7 @@ class InstructionTranslatorBase(
         log_graph_break(self.code_options, reason="STORE_ATTR-caused graph break")
         if not self.should_compile_partial_graph():
             unimplemented("should_compile_partial_graph=False")
+        print("call compile subgraph 2")
         self.output.compile_subgraph(
             self, reason=GraphCompileReason("store_attr", [self.frame_summary()])
         )
@@ -3073,6 +3077,7 @@ class InstructionTranslator(InstructionTranslatorBase):
             f"torchdynamo done tracing {self.f_code.co_name} ({inst.opname})",
         )
         log.debug("%s triggered compile", inst.opname)
+        print("call compile subgraph 1")
         self.output.compile_subgraph(
             self,
             reason=GraphCompileReason(
