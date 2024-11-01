@@ -414,6 +414,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
         if not self.should_compile_partial_graph():
             unimplemented("should_compile_partial_graph=False")
         # compile a partial subgraph prefix then jump into user code
+        print("check maybe_has_backedge 1")
         if self.maybe_has_backedge():
             msg = (
                 "Skipping frame because there is a graph break in a for/while loop\n"
@@ -633,6 +634,7 @@ def break_graph_if_unsupported(*, push):
                     user_stack=excp.real_stack,
                 )
 
+                print("check maybe_has_backedge 2")
                 if self.maybe_has_backedge():
                     msg = (
                         "Skipping frame because there is a graph break in a for/while loop\n"
