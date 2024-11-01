@@ -458,6 +458,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                 if bool(value.as_python_constant()):
                     return self.jump(inst)
                 else:
+                    print("call jump_graph_break 1")
                     jump_graph_break(self, inst, value)
 
             # TODO maybe should respect DtoH sync intention of users later??
@@ -515,6 +516,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
         elif (
             isinstance(value, (TensorVariable)) and self.should_compile_partial_graph()
         ):
+            print("call jump_graph_break 2")
             jump_graph_break(self, inst, value)
         elif isinstance(value, NNModuleVariable):
             # Equivalent of "self.nn_module is not None"
@@ -573,6 +575,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                 eval_result = value.evaluate_expr(self.output)
             except exc.UserError as e:
                 if self.should_compile_partial_graph():
+                    print("call jump_graph_break 3")
                     return jump_graph_break(self, inst, value, extra_msg=f"\n{e}")
                 raise
             if truth_fn(eval_result):
@@ -608,6 +611,7 @@ def break_graph_if_unsupported(*, push):
     def decorator(inner_fn):
         @functools.wraps(inner_fn)
         def wrapper(self: "InstructionTranslatorBase", inst: Instruction):
+            print("call decorator wrapper")
             speculation = self.speculate()
             if speculation.failed:
                 assert speculation.reason is not None
