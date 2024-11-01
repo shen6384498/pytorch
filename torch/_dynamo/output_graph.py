@@ -1127,10 +1127,12 @@ class OutputGraph:
         ):
             append_prefix_insts()
             # optimization to generate better code in a common case
+            print("pre call compile_and_call_fx_graph")
             self.add_output_instructions(
                 self.compile_and_call_fx_graph(tx, list(reversed(stack_values)), root)
                 + [create_instruction("UNPACK_SEQUENCE", arg=len(stack_values))]
             )
+            print("post call compile_and_call_fx_graph")
             # restore all the live local vars
             self.add_output_instructions(
                 [
@@ -1160,9 +1162,11 @@ class OutputGraph:
             stored_graph_output_var = False
             output = []
             if count_calls(self.graph) != 0 or len(pass2.graph_outputs) != 0:
+                print("pre call compile_and_call_fx_graph")
                 output.extend(
                     self.compile_and_call_fx_graph(tx, pass2.graph_output_vars(), root)
                 )
+                print("post call compile_and_call_fx_graph")
 
                 if len(pass2.graph_outputs) != 0:
                     output.append(pass2.create_store(graph_output_var))
