@@ -898,7 +898,7 @@ def _optimize(
     # The backend function is stashed in the callable returned by
     # _optimize_catch_errors in the field _torchdynamo_orig_callable. This can
     # be used by eval_frame.c to insert a guard on the backend.
-    print("****************** _optimize call  _optimize_catch_errors start", flush=True)
+    print("_optimize call  _optimize_catch_errors start", flush=True)
     print("_optimize call convert frame start", flush=True)
     aa = convert_frame.convert_frame(backend, hooks=hooks)
     print("_optimize call convert frame end", flush=True)
@@ -914,7 +914,7 @@ def _optimize(
         ),
         rebuild_ctx=rebuild_ctx,
     )
-    print("****************** _optimize call  _optimize_catch_errors end", flush=True)
+    print("_optimize call  _optimize_catch_errors end", flush=True)
     return aaa
 
 

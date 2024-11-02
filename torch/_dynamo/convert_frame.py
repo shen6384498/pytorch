@@ -1387,9 +1387,10 @@ class CatchErrorsWrapper:
 
         with compile_lock, _disable_current_modes():
             # skip=1: skip this frame
-            return self._torchdynamo_orig_callable(
-                frame, cache_entry, self.hooks, frame_state, skip=1
-            )
+            print("CatchErrorsWrapper call callback start", flush=True)
+            aa = self._torchdynamo_orig_callable(frame, cache_entry, self.hooks, frame_state, skip=1)
+            print("CatchErrorsWrapper call callback end", flush=True)
+            return aa
 
 
 def catch_errors_wrapper(
