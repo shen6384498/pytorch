@@ -23,6 +23,7 @@ void _Log(char *buf, int len, const char *fmt, ...) {
   char buf[1000] = { 0 };\
   _Log(buf, 1000, fmt, ##__VA_ARGS__);\
   printf("%s:%d %s\n", __FILE__, __LINE__, buf);\
+  fflush(stdout);\
 } while(0)
 
 PyObject* guard_error_hook = NULL;
@@ -229,7 +230,6 @@ inline static void enable_eval_frame_shim(PyThreadState* tstate) {
     DEBUG_CHECK(previous_eval_frame == NULL);
     previous_eval_frame = _PyInterpreterState_GetEvalFrameFunc(tstate->interp);
     Log("*******************thread id %ld enable_eval_frame_shim ********************", (long)pthread_self());
-    fflush(stdout);
     _PyInterpreterState_SetEvalFrameFunc(tstate->interp,
                                          &custom_eval_frame_shim);
   }
