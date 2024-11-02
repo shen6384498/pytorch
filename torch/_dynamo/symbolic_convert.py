@@ -986,6 +986,7 @@ class InstructionTranslatorBase(
 
     def step(self):
         """Process exactly one instruction, return False we should exit"""
+        print("********************* print step start ***********************")
         ip = self.instruction_pointer
         if ip is None:
             return False
@@ -1003,7 +1004,9 @@ class InstructionTranslatorBase(
         ):
             self.current_speculation = self.speculate()
             if self.current_speculation.failed:
-                return self.step_graph_break(inst)
+                aa = self.step_graph_break(inst)
+                print("********************* print step end ***********************")
+                return aa
 
         if trace_bytecode_log.isEnabledFor(logging.DEBUG):
             trace_bytecode_log.debug(
@@ -1014,19 +1017,24 @@ class InstructionTranslatorBase(
 
         try:
             self.dispatch_table[inst.opcode](self, inst)
+            print("********************* print step end ***********************")
             return not self.output.should_exit
         except exc.ObservedException as e:
             self.exception_handler(e)
+            print("********************* print step end ***********************")
             return True
         except ReturnValueOp:
+            print("********************* print step end ***********************")
             return False
         except Unsupported:
             if self.current_speculation is None:
                 log.debug("empty checkpoint")
+                print("********************* print step end ***********************")
                 raise
             log.debug("step triggered compile", exc_info=True)
 
         self.current_speculation.fail_and_restart_analysis()
+        print("********************* print step end ***********************")
 
     if sys.version_info >= (3, 11):
 
@@ -1106,7 +1114,9 @@ class InstructionTranslatorBase(
                 while self.step():
                     import threading
                     print("thread:", threading.current_thread().ident,"graph after inst:", self.current_instruction.opname)
+                    print("********************* print graph start ***********************")
                     self.output.graph.print_tabular()
+                    print("********************* print graph start ***********************")
                     pass
             except BackendCompilerFailed:
                 print("Instruction translator run end 1")
