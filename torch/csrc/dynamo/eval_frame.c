@@ -784,7 +784,7 @@ static PyObject* _custom_eval_frame(
   Log("****************** start compile frame %s  **************************", get_frame_name(frame));
   PyObject* result =
       call_callback(callback, frame, locals, cache_entry, frame_state);
-  Log("****************** end compile frame %s  **************************", get_frame_name(frame));
+  Log("****************** end compile frame %s  **************************\n", get_frame_name(frame));
   Py_DECREF(locals);
   if (result == NULL) {
     // internal exception, returning here will leak the exception into user code
