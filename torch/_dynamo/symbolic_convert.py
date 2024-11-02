@@ -414,7 +414,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
         if not self.should_compile_partial_graph():
             unimplemented("should_compile_partial_graph=False")
         # compile a partial subgraph prefix then jump into user code
-        print("check maybe_has_backedge 1")
+        print("check maybe_has_backedge 1", flush=True)
         if self.maybe_has_backedge():
             msg = (
                 "Skipping frame because there is a graph break in a for/while loop\n"
@@ -425,7 +425,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
 
         self.push(value)
         log.debug("generic_jump triggered compile")
-        print("call compile subgraph 5")
+        print("call compile subgraph 5", flush=True)
         self.output.compile_subgraph(
             self,
             reason=GraphCompileReason(
@@ -459,7 +459,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                 if bool(value.as_python_constant()):
                     return self.jump(inst)
                 else:
-                    print("call jump_graph_break 1")
+                    print("call jump_graph_break 1", flush=True)
                     jump_graph_break(self, inst, value)
 
             # TODO maybe should respect DtoH sync intention of users later??
@@ -515,7 +515,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                     self.push(value)
                 self.jump(inst)
         elif (isinstance(value, (TensorVariable)) and self.should_compile_partial_graph()):
-            print("call jump_graph_break 2")
+            print("call jump_graph_break 2", flush=True)
             jump_graph_break(self, inst, value)
         elif isinstance(value, NNModuleVariable):
             # Equivalent of "self.nn_module is not None"
@@ -574,7 +574,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                 eval_result = value.evaluate_expr(self.output)
             except exc.UserError as e:
                 if self.should_compile_partial_graph():
-                    print("call jump_graph_break 3")
+                    print("call jump_graph_break 3", flush=True)
                     return jump_graph_break(self, inst, value, extra_msg=f"\n{e}")
                 raise
             if truth_fn(eval_result):
@@ -1107,24 +1107,24 @@ class InstructionTranslatorBase(
         return TracingContext.current_frame(None)
 
     def run(self):
-        print("Instruction translator run start")
+        print("Instruction translator run start", flush=True)
         with self.run_ctx_mgr():
             try:
                 self.output.push_tx(self)
                 while self.step():
                     import threading
                     print("thread:", threading.current_thread().ident,"graph after inst:", self.current_instruction.opname)
-                    print("********************* print graph start ***********************")
+                    print("********************* print graph start ***********************", flush=True)
                     self.output.graph.print_tabular()
-                    print("********************* print graph start ***********************")
+                    print("********************* print graph start ***********************", flush=True)
                     pass
             except BackendCompilerFailed:
-                print("Instruction translator run end 1")
+                print("Instruction translator run end 1", flush=True)
                 raise
             except Exception as e:
                 if self.exec_recorder:
                     e.exec_record = self.exec_recorder.get_record()  # type: ignore[attr-defined]
-                print("Instruction translator run end 2")
+                print("Instruction translator run end 2", flush=True)
                 raise
             finally:
                 self.output.pop_tx()
