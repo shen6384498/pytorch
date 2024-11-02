@@ -2463,23 +2463,23 @@ def compile(
 
     if bisect_backend := BisectionManager.get_backend():
         backend = bisect_backend
-    print("***************** backend :", backend)
+    print("backend :", backend)
     if backend == "inductor":
-        print("******************* pre _TorchCompileInductorWrapper")
+        print("pre _TorchCompileInductorWrapper")
         backend = _TorchCompileInductorWrapper(mode, options, dynamic)
     else:
         backend = _TorchCompileWrapper(backend, mode, options, dynamic)
-    print("*********************** pre torch dynamo optimize")
+    print("compiler call optimize start", flush=True)
     aaa = torch._dynamo.optimize(
         backend=backend,
         nopython=fullgraph,
         dynamic=dynamic,
         disable=disable,
     )  # type: ignore[return-value]
-    print("*********************** post torch dynamo optimize")
-    print("*********************** pre call optimize")
+    print("compiler call optimize end", flush=True)
+    print("compiler call optimize return __call__ start", flush=True)
     bbb = aaa(model)
-    print("*********************** post call optimize")
+    print("compiler call optimize return __call__ end", flush=True)
     return bbb
 
 
