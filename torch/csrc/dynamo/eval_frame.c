@@ -229,6 +229,7 @@ inline static void enable_eval_frame_shim(PyThreadState* tstate) {
     DEBUG_CHECK(previous_eval_frame == NULL);
     previous_eval_frame = _PyInterpreterState_GetEvalFrameFunc(tstate->interp);
     Log("*******************thread id %ld enable_eval_frame_shim ********************", (long)pthread_self());
+    fflush(stdout);
     _PyInterpreterState_SetEvalFrameFunc(tstate->interp,
                                          &custom_eval_frame_shim);
   }

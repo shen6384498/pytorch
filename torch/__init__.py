@@ -2463,9 +2463,9 @@ def compile(
 
     if bisect_backend := BisectionManager.get_backend():
         backend = bisect_backend
-    print("backend :", backend)
+    print("backend :", backend, flush=True)
     if backend == "inductor":
-        print("pre _TorchCompileInductorWrapper")
+        print("pre _TorchCompileInductorWrapper", flush=True)
         backend = _TorchCompileInductorWrapper(mode, options, dynamic)
     else:
         backend = _TorchCompileWrapper(backend, mode, options, dynamic)
