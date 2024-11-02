@@ -818,14 +818,14 @@ def optimize(*args, **kwargs):
                 "fullgraph"
             }, f"Only `fullgraph` kwarg override is supported for now, but got {ca_kwargs_override.keys()}"
             kwargs["nopython"] = ca_kwargs_override["fullgraph"]
-        print("******************************* pre optimize", flush=True)
+        print("rebuild_ctx call optimize start", flush=True)
         aa = optimize(*args, **kwargs)
-        print("******************************* post optimize", flush=True)
+        print("rebuild_ctx call optimize end", flush=True)
         return aa
 
-    print("******************************* pre _optimize", flush=True)
+    print("optimize call _optimize start", flush=True)
     aaa = _optimize(rebuild_ctx, *args, **kwargs)
-    print("******************************* post _optimize", flush=True)
+    print("optimize call _optimize end", flush=True)
     return aaa
 
 
@@ -952,12 +952,13 @@ def explain(f, *extra_args, **extra_kwargs):
         def guard_export_print(guards):
             nonlocal out_guards
             out_guards.extend(guards)
-
+        print("explain.inner call optimize start", flush=True)
         opt_f = optimize(
             dynamo_graph_accumulating_compiler,
             nopython=False,
             guard_export_fn=guard_export_print,
         )(f)
+        print("explain.inner call optimize end", flush=True)
         # TODO(voz): We may have instances of `f` that mutate inputs, we should track sideeffects and reject.
         opt_f(*args, **kwargs)
 
