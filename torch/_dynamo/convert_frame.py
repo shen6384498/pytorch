@@ -541,7 +541,8 @@ class ConvertFrameAssert:
             info = f"{code.co_name} {code.co_filename}:{code.co_firstlineno}"
             dynamo_tls.traced_frame_infos.append(info)
 
-        return _compile(
+        print("ConvertFrameAssert pre call _compile start", flush=True)
+        aa = _compile(
             frame.f_code,
             frame.f_globals,
             frame.f_locals,
@@ -558,6 +559,8 @@ class ConvertFrameAssert:
             compile_id=compile_id,
             skip=skip + 1,
         )
+        print("ConvertFrameAssert pre call _compile end", flush=True)
+        return aa
 
 
 def convert_frame_assert(
@@ -1169,12 +1172,15 @@ class ConvertFrame:
     ]:
         counters["frames"]["total"] += 1
         try:
+            print("ConvertFrame call ConvertFrameAssert start", flush=True)
             result = self._inner_convert(
                 frame, cache_entry, hooks, frame_state, skip=skip + 1
             )
+            print("ConvertFrame call ConvertFrameAssert end 1", flush=True)
             counters["frames"]["ok"] += 1
             return result
         except Exception as e:
+            print("ConvertFrame call ConvertFrameAssert end 2", flush=True)
             # These two exception types are "soft" failure, in the sense that
             # we know this is due to something we didn't implement all the
             # way, scare the user less about it.  That being said, if you
@@ -1260,6 +1266,7 @@ def replay(filename: str) -> None:
     record.globals = dict(itertools.chain(record.globals.items(), globals().items()))
 
     try:
+        print("replay pre call _compile start", flush=True)
         _compile(
             record.code,
             record.globals,
@@ -1276,7 +1283,9 @@ def replay(filename: str) -> None:
             frame_state={},
             compile_id=CompileId(42, 999),
         )
+        print("replay pre call _compile end 1", flush=True)
     finally:
+        print("replay pre call _compile end 2", flush=True)
         config.replay_record_enabled = original_replay_val
 
 

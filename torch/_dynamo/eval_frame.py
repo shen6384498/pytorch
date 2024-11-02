@@ -887,12 +887,15 @@ def _optimize(
     backend_ctx_ctor = getattr(backend, "backend_ctx_ctor", null_context)
 
     if nopython:
-        return optimize_assert(
+        print("_optimize call optimize_assert start", flush=True)
+        aa = optimize_assert(
             backend,
             dynamic=dynamic,
             hooks=hooks,
             rebuild_ctx=rebuild_ctx,
         )
+        print("_optimize call optimize_assert end", flush=True)
+        return aa
     # The backend function is stashed in the callable returned by
     # _optimize_catch_errors in the field _torchdynamo_orig_callable. This can
     # be used by eval_frame.c to insert a guard on the backend.
@@ -1539,6 +1542,7 @@ def export(
             prefer_deferred_runtime_asserts_over_guards=prefer_deferred_runtime_asserts_over_guards,
             allow_complex_guards_as_runtime_asserts=allow_complex_guards_as_runtime_asserts,
         ):
+            print("inner call optimize_assert start", flush=True)
             opt_f = optimize_assert(
                 dynamo_normalization_capturing_compiler,
                 hooks=Hooks(
@@ -1548,6 +1552,7 @@ def export(
                 export=True,
                 export_constraints=constraints,
             )(f)
+            print("inner call optimize_assert end", flush=True)
             # TODO(voz): We may have instances of `f` that mutate inputs, we should track sideeffects and reject.
             try:
                 result_traced = opt_f(*args, **kwargs)
@@ -1737,11 +1742,10 @@ def optimize_assert(
 
     # Find if backend has any extra context manager
     backend_ctx_ctor = getattr(backend, "backend_ctx_ctor", null_context)
-
-    return _optimize_catch_errors(
-        convert_frame.convert_frame_assert(
-            backend, export=export, export_constraints=export_constraints
-        ),
+    print("optimize_assert call ConvertFrameAssert start", flush=True)
+    aa = convert_frame.convert_frame_assert(backend, export=export, export_constraints=export_constraints)
+    print("optimize_assert call ConvertFrameAssert end", flush=True)
+    return _optimize_catch_errors(aa,
         hooks,
         backend_ctx_ctor,
         export=export,
