@@ -994,7 +994,7 @@ class OutputGraph:
         Automatically restore live variables.
         """
         assert reason is not None
-        print("compile_subgraph enter")
+        print("compile_subgraph enter", flush=True)
         from .decorators import disable
 
         self.partial_convert = partial_convert
@@ -1127,12 +1127,12 @@ class OutputGraph:
         ):
             append_prefix_insts()
             # optimization to generate better code in a common case
-            print("pre call compile_and_call_fx_graph")
+            print("pre call compile_and_call_fx_graph", flush=True)
             self.add_output_instructions(
                 self.compile_and_call_fx_graph(tx, list(reversed(stack_values)), root)
                 + [create_instruction("UNPACK_SEQUENCE", arg=len(stack_values))]
             )
-            print("post call compile_and_call_fx_graph")
+            print("post call compile_and_call_fx_graph", flush=True)
             # restore all the live local vars
             self.add_output_instructions(
                 [
@@ -1162,11 +1162,11 @@ class OutputGraph:
             stored_graph_output_var = False
             output = []
             if count_calls(self.graph) != 0 or len(pass2.graph_outputs) != 0:
-                print("pre call compile_and_call_fx_graph")
+                print("pre call compile_and_call_fx_graph", flush=True)
                 output.extend(
                     self.compile_and_call_fx_graph(tx, pass2.graph_output_vars(), root)
                 )
-                print("post call compile_and_call_fx_graph")
+                print("post call compile_and_call_fx_graph", flush=True)
 
                 if len(pass2.graph_outputs) != 0:
                     output.append(pass2.create_store(graph_output_var))
@@ -1362,7 +1362,7 @@ class OutputGraph:
 
             # free a bit of memory
             self.real_value_cache.clear()
-            print("compile and call fx graph step 1")
+            print("compile and call fx graph step 1", flush=True)
             self.graph.print_tabular()
             gm = _make_graph_module(root, self.graph)
             for register_finalizer in self.register_finalizer_fns:
@@ -1388,7 +1388,7 @@ class OutputGraph:
             )
             self.call_cleanup_hooks()
             
-            print("compile and call fx graph step 2")
+            print("compile and call fx graph step 2", flush=True)
             self.graph.print_tabular()
             old_fake_mode = self.tracing_context.fake_mode
             if not self.export:
@@ -1432,7 +1432,7 @@ class OutputGraph:
 
             compiled_fn = disable(compiled_fn)
 
-            print("compile and call fx graph step 3")
+            print("compile and call fx graph step 3", flush=True)
             self.graph.print_tabular()
             counters["stats"]["unique_graphs"] += 1
             # This is safe because we pre-process name to be unique
@@ -1441,7 +1441,7 @@ class OutputGraph:
             cg = PyCodegen(tx)
             cg.make_call_generated_code(name)
             
-            print("compile and call fx graph step 4")
+            print("compile and call fx graph step 4", flush=True)
             self.graph.print_tabular()
             return cg.get_instructions()
 

@@ -610,7 +610,7 @@ def break_graph_if_unsupported(*, push):
     def decorator(inner_fn):
         @functools.wraps(inner_fn)
         def wrapper(self: "InstructionTranslatorBase", inst: Instruction):
-            print("call decorator wrapper")
+            print("call decorator wrapper", flush=True)
             speculation = self.speculate()
             if speculation.failed:
                 assert speculation.reason is not None
@@ -637,7 +637,7 @@ def break_graph_if_unsupported(*, push):
                     user_stack=excp.real_stack,
                 )
 
-                print("check maybe_has_backedge 2")
+                print("check maybe_has_backedge 2", flush=True)
                 if self.maybe_has_backedge():
                     msg = (
                         "Skipping frame because there is a graph break in a for/while loop\n"
@@ -656,7 +656,7 @@ def break_graph_if_unsupported(*, push):
             inst: Instruction,
             reason: GraphCompileReason,
         ):
-            print("call compile subgraph 4")
+            print("call compile subgraph 4", flush=True)
             self.output.compile_subgraph(self, reason=reason)
             cg = PyCodegen(self)
             cleanup: List[Instruction] = []
@@ -792,17 +792,17 @@ class InstructionTranslatorBase(
         # isn't), multiple graphs may be generated if there's a break in the
         # graph during a for loop. In general, its better to have fewer false
         # negatives so that Dynamo does not skip the whole frame.
-        print("need skip insts:", JUMP_OPNAMES)
+        print("need skip insts:", JUMP_OPNAMES, flush=True)
         cur_offset = self.current_instruction.offset
         assert self.instruction_pointer is not None
         for inst in self.instructions[self.instruction_pointer :]:
-            print("check inst:", inst.opname, " jump offset:", inst.argval, " current offset:", cur_offset)
+            print("check inst:", inst.opname, " jump offset:", inst.argval, " current offset:", cur_offset, flush=True)
             if inst.opname in ("RETURN_VALUE", "RETURN_CONST"):
                 return False
             if inst.opname in JUMP_OPNAMES:
                 jump_offset = inst.argval
                 if jump_offset < cur_offset:
-                    print("maybe_has_backedge check true for inst:", inst.opname, " all skip name:", JUMP_OPNAMES)
+                    print("maybe_has_backedge check true for inst:", inst.opname, " all skip name:", JUMP_OPNAMES, flush=True)
                     return True
         return False
 
@@ -986,12 +986,12 @@ class InstructionTranslatorBase(
 
     def step(self):
         """Process exactly one instruction, return False we should exit"""
-        print("********************* print step start ***********************")
+        print("********************* print step start ***********************", flush=True)
         ip = self.instruction_pointer
         if ip is None:
             return False
         self.current_instruction = inst = self.instructions[ip]
-        print("Instruction tanslator print current inst:", self.current_instruction.opname)
+        print("Instruction tanslator print current inst:", self.current_instruction.opname, flush=True)
         self.instruction_pointer = ip + 1
 
         if inst.starts_line:
@@ -1005,7 +1005,7 @@ class InstructionTranslatorBase(
             self.current_speculation = self.speculate()
             if self.current_speculation.failed:
                 aa = self.step_graph_break(inst)
-                print("********************* print step end ***********************")
+                print("********************* print step end ***********************", flush=True)
                 return aa
 
         if trace_bytecode_log.isEnabledFor(logging.DEBUG):
@@ -1017,24 +1017,24 @@ class InstructionTranslatorBase(
 
         try:
             self.dispatch_table[inst.opcode](self, inst)
-            print("********************* print step end ***********************")
+            print("********************* print step end ***********************", flush=True)
             return not self.output.should_exit
         except exc.ObservedException as e:
             self.exception_handler(e)
-            print("********************* print step end ***********************")
+            print("********************* print step end ***********************", flush=True)
             return True
         except ReturnValueOp:
-            print("********************* print step end ***********************")
+            print("********************* print step end ***********************", flush=True)
             return False
         except Unsupported:
             if self.current_speculation is None:
                 log.debug("empty checkpoint")
-                print("********************* print step end ***********************")
+                print("********************* print step end ***********************", flush=True)
                 raise
             log.debug("step triggered compile", exc_info=True)
 
         self.current_speculation.fail_and_restart_analysis()
-        print("********************* print step end ***********************")
+        print("********************* print step end ***********************", flush=True)
 
     if sys.version_info >= (3, 11):
 
@@ -1090,7 +1090,7 @@ class InstructionTranslatorBase(
         # generate code from checkpoint
         assert not self.output.output_instructions
         assert self.current_speculation is not None
-        print("call compile subgraph 3")
+        print("call compile subgraph 3", flush=True)
         self.output.compile_subgraph(
             self,
             partial_convert=True,
@@ -1113,7 +1113,7 @@ class InstructionTranslatorBase(
                 self.output.push_tx(self)
                 while self.step():
                     import threading
-                    print("thread:", threading.current_thread().ident,"graph after inst:", self.current_instruction.opname)
+                    print("thread:", threading.current_thread().ident,"graph after inst:", self.current_instruction.opname, flush=True)
                     print("********************* print graph start ***********************", flush=True)
                     self.output.graph.print_tabular()
                     print("********************* print graph start ***********************", flush=True)
@@ -1136,7 +1136,7 @@ class InstructionTranslatorBase(
                 if isinstance(self, InstructionTranslator):
                     self.output.cleanup()
 
-        print("Instruction translator run end 3")
+        print("Instruction translator run end 3", flush=True)
 
     def push(self, val: Optional[VariableTracker], name: Any = None):
         assert val is None or isinstance(
@@ -1912,7 +1912,7 @@ class InstructionTranslatorBase(
         log_graph_break(self.code_options, reason="STORE_ATTR-caused graph break")
         if not self.should_compile_partial_graph():
             unimplemented("should_compile_partial_graph=False")
-        print("call compile subgraph 2")
+        print("call compile subgraph 2", flush=True)
         self.output.compile_subgraph(
             self, reason=GraphCompileReason("store_attr", [self.frame_summary()])
         )
@@ -2718,10 +2718,10 @@ class InstructionTranslatorBase(
 
         # Properties of the input/output code
         self.instructions: List[Instruction] = instructions
-        print("************************ inst start ***********************")
+        print("************************ inst start ***********************", flush=True)
         for inst in self.instructions:
             print("inst:", inst.opname)
-        print("************************ inst end ***********************")
+        print("************************ inst end ***********************", flush=True)
         self.indexof: Dict[Instruction, int] = get_indexof(self.instructions)
         self.f_locals: Dict[
             str, Any
@@ -2938,9 +2938,9 @@ class InstructionTranslator(InstructionTranslatorBase):
                 not self.block_stack or entry.target is not self.block_stack[-1].target
             ):
                 return False
-        print("block stack:", self.block_stack)
+        print("block stack:", self.block_stack, flush=True)
         for b in self.block_stack:
-            print("print block stack:", b.inst.opname)
+            print("print block stack:", b.inst.opname, flush=True)
         return (
             all(b.can_restore() for b in self.block_stack)
             and not self.one_graph
@@ -3096,7 +3096,7 @@ class InstructionTranslator(InstructionTranslatorBase):
             f"torchdynamo done tracing {self.f_code.co_name} ({inst.opname})",
         )
         log.debug("%s triggered compile", inst.opname)
-        print("call compile subgraph 1")
+        print("call compile subgraph 1", flush=True)
         self.output.compile_subgraph(
             self,
             reason=GraphCompileReason(

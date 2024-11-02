@@ -116,7 +116,7 @@ def _maybe_set_eval_frame(callback: DynamoCallback):
         )
         return callback
     else:
-        print("********************* call eval frame ********************")
+        print("********************* call eval frame ********************", flush=True)
         return set_eval_frame(callback)
 
 
@@ -455,7 +455,7 @@ class _TorchDynamoContext:
         self.cleanup_fns.clear()
 
     def __call__(self, fn):
-        print("*********************** torch dynamo context start")
+        print("*********************** torch dynamo context start", flush=True)
         # public api for compiler config/options
         def get_compiler_config():
             return self.compiler_config
@@ -524,7 +524,7 @@ class _TorchDynamoContext:
 
         @functools.wraps(fn)
         def _fn(*args, **kwargs):
-            print("********************************* context _fn start")
+            print("********************************* context _fn start", flush=True)
             if is_fx_tracing():
                 if config.error_on_nested_fx_trace:
                     raise RuntimeError(
@@ -532,9 +532,9 @@ class _TorchDynamoContext:
                         "a dynamo-optimized function. This is not supported at the moment."
                     )
                 else:
-                    print("********************************* 1 context fn start")
+                    print("********************************* 1 context fn start", flush=True)
                     aaa = fn(*args, **kwargs)
-                    print("********************************* 1 context fn end")
+                    print("********************************* 1 context fn end", flush=True)
                     return aaa
 
             if is_jit_tracing():
@@ -557,10 +557,10 @@ class _TorchDynamoContext:
             )
 
             try:
-                print("********************************* 2 context fn start")
+                print("********************************* 2 context fn start", flush=True)
                 bbb = fn(*args, **kwargs)
-                print("********************************* 2 context fn end")
-                print("********************************* context _fn end")
+                print("********************************* 2 context fn end", flush=True)
+                print("********************************* context _fn end", flush=True)
                 return bbb
             finally:
                 # Restore the dynamic layer stack depth if necessary.
@@ -572,7 +572,7 @@ class _TorchDynamoContext:
                 for cleanup in cleanups:
                     cleanup()
             
-            print("********************************* context _fn end")
+            print("********************************* context _fn end", flush=True)
 
         # hooks to properly handle inlining
         _fn._torchdynamo_inline = fn  # type: ignore[attr-defined]
@@ -625,7 +625,7 @@ class _TorchDynamoContext:
                 )
             always_optimize_code_objects[fn.__code__] = True
 
-        print("*********************** torch dynamo context end")
+        print("*********************** torch dynamo context end", flush=True)
         return _fn
 
 
@@ -819,14 +819,14 @@ def optimize(*args, **kwargs):
                 "fullgraph"
             }, f"Only `fullgraph` kwarg override is supported for now, but got {ca_kwargs_override.keys()}"
             kwargs["nopython"] = ca_kwargs_override["fullgraph"]
-        print("******************************* pre optimize")
+        print("******************************* pre optimize", flush=True)
         aa = optimize(*args, **kwargs)
-        print("******************************* post optimize")
+        print("******************************* post optimize", flush=True)
         return aa
 
-    print("******************************* pre _optimize")
+    print("******************************* pre _optimize", flush=True)
     aaa = _optimize(rebuild_ctx, *args, **kwargs)
-    print("******************************* post _optimize")
+    print("******************************* post _optimize", flush=True)
     return aaa
 
 
@@ -896,7 +896,7 @@ def _optimize(
     # The backend function is stashed in the callable returned by
     # _optimize_catch_errors in the field _torchdynamo_orig_callable. This can
     # be used by eval_frame.c to insert a guard on the backend.
-    print("****************** pre _optimize_catch_errors")
+    print("****************** pre _optimize_catch_errors", flush=True)
     aaa = _optimize_catch_errors(
         convert_frame.convert_frame(backend, hooks=hooks),
         hooks,
@@ -909,7 +909,7 @@ def _optimize(
         ),
         rebuild_ctx=rebuild_ctx,
     )
-    print("****************** post _optimize_catch_errors")
+    print("****************** post _optimize_catch_errors", flush=True)
     return aaa
 
 

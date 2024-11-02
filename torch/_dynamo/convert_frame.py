@@ -1322,7 +1322,7 @@ class CatchErrorsWrapper:
             )
         ):
             if log.isEnabledFor(logging.DEBUG):
-                print(frame.f_lasti, first_real_inst_idx(frame.f_code))
+                print(frame.f_lasti, first_real_inst_idx(frame.f_code), flush=True)
 
                 if has_started_execution:
                     skip_reason = "traced frame already"
