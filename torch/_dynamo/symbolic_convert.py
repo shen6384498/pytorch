@@ -1099,6 +1099,7 @@ class InstructionTranslatorBase(
         return TracingContext.current_frame(None)
 
     def run(self):
+        print("Instruction translator run start")
         with self.run_ctx_mgr():
             try:
                 self.output.push_tx(self)
@@ -1108,10 +1109,12 @@ class InstructionTranslatorBase(
                     self.output.graph.print_tabular()
                     pass
             except BackendCompilerFailed:
+                print("Instruction translator run end 1")
                 raise
             except Exception as e:
                 if self.exec_recorder:
                     e.exec_record = self.exec_recorder.get_record()  # type: ignore[attr-defined]
+                print("Instruction translator run end 2")
                 raise
             finally:
                 self.output.pop_tx()
@@ -1122,6 +1125,8 @@ class InstructionTranslatorBase(
                 # there was an exception.
                 if isinstance(self, InstructionTranslator):
                     self.output.cleanup()
+
+        print("Instruction translator run end 3")
 
     def push(self, val: Optional[VariableTracker], name: Any = None):
         assert val is None or isinstance(
