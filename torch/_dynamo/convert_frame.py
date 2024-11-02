@@ -610,7 +610,7 @@ def _compile(
     compile_id: CompileId,
     skip: int = 0,
 ) -> Optional[GuardedCode]:
-    print("_compile start")
+    print("_compile start", flush=True)
     from torch.fx.experimental.validator import (
         bisect,
         BisectValidationException,
@@ -873,14 +873,14 @@ def _compile(
         if exceeded:
 
             def format_func_info(code: CodeType) -> str:
-                print("_compile end 1")
+                print("_compile end 1", flush=True)
                 return f"'{code.co_name}' ({code.co_filename}:{code.co_firstlineno})"
 
             def format_guard_failures() -> str:
                 if not recompile_reasons:
-                    print("_compile end 2")
+                    print("_compile end 2", flush=True)
                     return "Unable to find recompilation reasons"
-                print("_compile end 3")
+                print("_compile end 3", flush=True)
                 return recompile_reasons[-1]
 
             log.warning(
@@ -896,14 +896,14 @@ def _compile(
                 troubleshooting_url,
             )
             if config.fail_on_cache_limit_hit:
-                print("_compile end 4")
+                print("_compile end 4", flush=True)
                 raise FailOnCacheLimitHit(
                     f"{limit_type} reached, because fail_on_cache_limit_hit = True this is a HARD failure"
                 )
             elif config.skip_code_recursive_on_cache_limit_hit and justknobs_check(
                 "pytorch/compiler:skip_code_recursive_on_cache_limit_hit"
             ):
-                print("_compile end 5")
+                print("_compile end 5", flush=True)
                 raise CacheLimitExceeded(f"{limit_type} reached")
             else:
                 # do not recursively skip frames
@@ -971,7 +971,7 @@ def _compile(
         guarded_code = None
         try:
             guarded_code = compile_inner(code, one_graph, hooks, transform)
-            print("_compile end 6")
+            print("_compile end 6", flush=True)
             return guarded_code
         except Exception as e:
             fail_type = type(e).__qualname__
@@ -1005,10 +1005,10 @@ def _compile(
                     BisectValidationException,
                 ),
             ):
-                print("_compile end 7")
+                print("_compile end 7", flush=True)
                 raise
             else:
-                print("_compile end 8")
+                print("_compile end 8", flush=True)
                 # Rewrap for clarity
                 raise InternalTorchDynamoError(
                     f"{type(e).__qualname__}: {str(e)}"
@@ -1140,7 +1140,7 @@ def _compile(
             chromium_event_log.log_event_end(
                 "dynamo", time.time_ns(), {}, chromium_start_time
             )
-    print("_compile end 9")
+    print("_compile end 9", flush=True)
 
 
 class ConvertFrame:
