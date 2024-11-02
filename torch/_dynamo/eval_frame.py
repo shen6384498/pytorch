@@ -152,14 +152,13 @@ def _callback_from_stance(callback):
         # force_backend
         if _stance.backend is not None:
             hooks = Hooks()
-            callback = convert_frame.catch_errors_wrapper(
-                convert_frame.convert_frame(  # type: ignore[arg-type]
+            print("_call_back_from_stance call convert frame start", flush=True)
+            aa = convert_frame.convert_frame(  # type: ignore[arg-type]
                     get_compiler_fn(_stance.backend),
                     hooks,
-                ),
-                hooks,
-            )
-
+                )
+            print("_call_back_from_stance call convert frame end", flush=True)
+            callback = convert_frame.catch_errors_wrapper(aa, hooks, )
         return callback
     elif _stance.stance == "force_eager":
         # disable
@@ -899,9 +898,12 @@ def _optimize(
     # The backend function is stashed in the callable returned by
     # _optimize_catch_errors in the field _torchdynamo_orig_callable. This can
     # be used by eval_frame.c to insert a guard on the backend.
-    print("****************** pre _optimize_catch_errors", flush=True)
+    print("****************** _optimize call  _optimize_catch_errors start", flush=True)
+    print("_optimize call convert frame start", flush=True)
+    aa = convert_frame.convert_frame(backend, hooks=hooks)
+    print("_optimize call convert frame end", flush=True)
     aaa = _optimize_catch_errors(
-        convert_frame.convert_frame(backend, hooks=hooks),
+        aa,
         hooks,
         backend_ctx_ctor,
         dynamic=dynamic,
@@ -912,7 +914,7 @@ def _optimize(
         ),
         rebuild_ctx=rebuild_ctx,
     )
-    print("****************** post _optimize_catch_errors", flush=True)
+    print("****************** _optimize call  _optimize_catch_errors end", flush=True)
     return aaa
 
 
