@@ -1103,6 +1103,8 @@ class InstructionTranslatorBase(
             try:
                 self.output.push_tx(self)
                 while self.step():
+                    print("graph after inst:", self.current_instruction.opname)
+                    self.output.graph.print_tabular();
                     pass
             except BackendCompilerFailed:
                 raise
