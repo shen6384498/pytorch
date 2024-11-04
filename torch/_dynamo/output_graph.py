@@ -1129,9 +1129,11 @@ class OutputGraph:
             # optimization to generate better code in a common case
             print("pre call compile_and_call_fx_graph", flush=True)
             aa = self.compile_and_call_fx_graph(tx, list(reversed(stack_values)), root)
+            print("print compile subgraph result:", aa)
             print("post call compile_and_call_fx_graph", flush=True)
             print("pre call create_instruction", flush=True)
             bb = create_instruction("UNPACK_SEQUENCE", arg=len(stack_values))
+            print("print compile create_instruction result:", bb)
             print("post call create_instruction", flush=True)
             print("pre call add_output_instructions", flush=True)
             self.add_output_instructions(aa + [bb])
@@ -1145,7 +1147,9 @@ class OutputGraph:
                     for var in reversed(restore_vars)
                 ]
             )
+            print("after subgraph compile output inst:", self.output_instructions, flush=True)
         else:
+            print("other branch", flush=True)
             graph_output_var = self.new_var("graph_out")
             pass1 = PyCodegen(
                 tx, root, graph_output_var, overridden_sources=overridden_sources
