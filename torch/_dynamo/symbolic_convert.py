@@ -448,6 +448,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
         )
 
     def inner(self: "InstructionTranslatorBase", inst: Instruction):
+        print("generic_jump.inner start", flush=True)
         value: VariableTracker = self.pop()
         if (
             config.rewrite_assert_with_torch_assert
@@ -456,7 +457,9 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
             error_msg: VariableTracker = self.pop()
             # Skip over things like `assert True`
             if value.is_python_constant():
+                print("python value:", value, flush=True)
                 if bool(value.as_python_constant()):
+                    print("generic_jump.inner end", flush=True)
                     return self.jump(inst)
                 else:
                     print("call jump_graph_break 1", flush=True)
@@ -474,6 +477,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                     *proxy_args_kwargs((value, error_msg), {}),
                 )
                 self.jump(inst)
+                print("generic_jump.inner end", flush=True)
                 return
 
             if isinstance(value, SymNodeVariable):
@@ -489,6 +493,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                         "Assertion failed on symbolic shapes. Did you make sure eager mode succeeds?"
                     )
                 self.jump(inst)
+                print("generic_jump.inner end", flush=True)
                 return
 
             scalar_to_tensor_proxy = self.output.create_proxy(
@@ -507,16 +512,18 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                 *proxy_args_kwargs((scalar_to_tensor, error_msg), {}),
             )
             self.jump(inst)
+            print("generic_jump.inner end", flush=True)
             return
-
+        print("print value:", value, flush=True)
         if value.is_python_constant():
             if truth_fn(value.as_python_constant()):
                 if push:
                     self.push(value)
                 self.jump(inst)
         elif (isinstance(value, (TensorVariable)) and self.should_compile_partial_graph()):
-            print("call jump_graph_break 2", flush=True)
+            print("call jump_graph_break 2 start", flush=True)
             jump_graph_break(self, inst, value)
+            print("call jump_graph_break 2 end", flush=True)
         elif isinstance(value, NNModuleVariable):
             # Equivalent of "self.nn_module is not None"
             mod = self.output.get_submodule(value.module_key)
@@ -575,6 +582,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
             except exc.UserError as e:
                 if self.should_compile_partial_graph():
                     print("call jump_graph_break 3", flush=True)
+                    print("generic_jump.inner end", flush=True)
                     return jump_graph_break(self, inst, value, extra_msg=f"\n{e}")
                 raise
             if truth_fn(eval_result):
@@ -602,6 +610,7 @@ def generic_jump(truth_fn: typing.Callable[[object], bool], push: bool):
                     "functorch.experimental.control_flow.cond to explicitly capture the control flow.",
                     case_name="cond_operands",
                 )
+        print("generic_jump.inner end", flush=True)
 
     return inner
 
