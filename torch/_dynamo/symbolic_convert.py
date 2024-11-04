@@ -1005,7 +1005,7 @@ class InstructionTranslatorBase(
             self.current_speculation = self.speculate()
             if self.current_speculation.failed:
                 aa = self.step_graph_break(inst)
-                print("********************* print step end ***********************", flush=True)
+                print("********************* print step end 1 ***********************", flush=True)
                 return aa
 
         if trace_bytecode_log.isEnabledFor(logging.DEBUG):
@@ -1017,24 +1017,24 @@ class InstructionTranslatorBase(
 
         try:
             self.dispatch_table[inst.opcode](self, inst)
-            print("********************* print step end ***********************", flush=True)
+            print("********************* print step end 2 ***********************", flush=True)
             return not self.output.should_exit
         except exc.ObservedException as e:
             self.exception_handler(e)
-            print("********************* print step end ***********************", flush=True)
+            print("********************* print step end 3 ***********************", flush=True)
             return True
         except ReturnValueOp:
-            print("********************* print step end ***********************", flush=True)
+            print("********************* print step end 4 ***********************", flush=True)
             return False
         except Unsupported:
             if self.current_speculation is None:
                 log.debug("empty checkpoint")
-                print("********************* print step end ***********************", flush=True)
+                print("********************* print step end 5 ***********************", flush=True)
                 raise
             log.debug("step triggered compile", exc_info=True)
 
         self.current_speculation.fail_and_restart_analysis()
-        print("********************* print step end ***********************", flush=True)
+        print("********************* print step end 6 ***********************", flush=True)
 
     if sys.version_info >= (3, 11):
 

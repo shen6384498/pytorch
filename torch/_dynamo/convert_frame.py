@@ -717,7 +717,7 @@ def _compile(
                     format_bytecode(prefix, name, filename, line_no, code)
                 )
 
-        log_bytecode(
+        print(
             "ORIGINAL BYTECODE",
             code.co_name,
             code.co_filename,
@@ -760,7 +760,7 @@ def _compile(
         ), "compiler collective wasn't run before compilation completed"
 
         assert out_code is not None
-        log_bytecode(
+        print(
             "MODIFIED BYTECODE",
             code.co_name,
             code.co_filename,
@@ -912,7 +912,7 @@ def _compile(
                 # do not recursively skip frames
                 unimplemented(f"{limit_type} reached")
 
-        log.debug(
+        print(
             "torchdynamo start compiling %s %s:%s, stack (elided %s frames):\n%s",
             code.co_name,
             code.co_filename,
