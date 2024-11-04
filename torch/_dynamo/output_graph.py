@@ -994,7 +994,7 @@ class OutputGraph:
         Automatically restore live variables.
         """
         assert reason is not None
-        print("compile_subgraph enter", flush=True)
+        print("compile_subgraph start", flush=True)
         from .decorators import disable
 
         self.partial_convert = partial_convert
@@ -1128,11 +1128,14 @@ class OutputGraph:
             append_prefix_insts()
             # optimization to generate better code in a common case
             print("pre call compile_and_call_fx_graph", flush=True)
-            self.add_output_instructions(
-                self.compile_and_call_fx_graph(tx, list(reversed(stack_values)), root)
-                + [create_instruction("UNPACK_SEQUENCE", arg=len(stack_values))]
-            )
+            aa = self.compile_and_call_fx_graph(tx, list(reversed(stack_values)), root)
             print("post call compile_and_call_fx_graph", flush=True)
+            print("pre call create_instruction", flush=True)
+            bb = create_instruction("UNPACK_SEQUENCE", arg=len(stack_values))
+            print("post call create_instruction", flush=True)
+            print("pre call add_output_instructions", flush=True)
+            self.add_output_instructions(aa + [bb])
+            print("post call add_output_instructions", flush=True)
             # restore all the live local vars
             self.add_output_instructions(
                 [
@@ -1198,6 +1201,7 @@ class OutputGraph:
                         ).create_delete(graph_output_var)
                     ]
                 )
+        print("compile_subgraph end", flush=True)
 
     def codegen_suffix(self, tx, stack_values, cg):
         if self.backward_state:
