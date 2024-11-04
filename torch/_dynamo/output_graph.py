@@ -1001,7 +1001,7 @@ class OutputGraph:
         self.compile_subgraph_reason = reason
         self.should_exit = True
 
-        log.debug("COMPILING GRAPH due to %s", reason)
+        print("COMPILING GRAPH due to %s", reason)
 
         if not all(block.can_restore() for block in tx.block_stack):
             unimplemented("compile_subgraph with block_depth != 0")
