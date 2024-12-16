@@ -487,6 +487,7 @@ class PyCodegen:
         self(AttrSource(self.tx.import_source(module_name), object_name))
 
     def create_call_function_kw(self, nargs, kw_names, push_null) -> List[Instruction]:
+
         if sys.version_info >= (3, 13):
             output = create_call_function(nargs, push_null)
             assert output[-1].opname == "CALL"
@@ -505,10 +506,12 @@ class PyCodegen:
             kw_names_inst = create_instruction("KW_NAMES", argval=kw_names)
             output.insert(idx, kw_names_inst)
             return output
-        return [
-            self.create_load_const(kw_names),
-            create_instruction("CALL_FUNCTION_KW", arg=nargs),
-        ]
+        aa = self.create_load_const(kw_names)
+        print("************************* start create CALL_FUNCTION_KW **********************")
+        bb = create_instruction("CALL_FUNCTION_KW", arg=nargs)
+        print("************************* end create CALL_FUNCTION_KW **********************")
+        cc = [aa, bb,]
+        return cc
 
     def create_delete(self, value) -> Instruction:
         return create_instruction("DELETE_FAST", argval=value)
