@@ -507,9 +507,9 @@ class PyCodegen:
             output.insert(idx, kw_names_inst)
             return output
         aa = self.create_load_const(kw_names)
-        print("************************* start create CALL_FUNCTION_KW **********************")
+        print("************************* start create CALL_FUNCTION_KW **********************", flush=True)
         bb = create_instruction("CALL_FUNCTION_KW", arg=nargs)
-        print("************************* end create CALL_FUNCTION_KW **********************")
+        print("************************* end create CALL_FUNCTION_KW **********************", flush=True)
         cc = [aa, bb,]
         return cc
 
