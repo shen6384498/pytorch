@@ -910,6 +910,13 @@ static PyObject* _custom_eval_frame(
     fflush(stdout);
     Log("****************** user bytes code end  **************************");
     Log("****************** compile bytes code start **************************");
+    printf("bytes:");
+    char* bytes = PyBytes_AsString(code->co_code);
+    size_t size = PyBytes_Size(code->co_code);
+    for (size_t i = 0; i < size; ++i) {
+      printf("%u\t", (unsigned int)(unsigned char)(bytes[i]));
+    }
+    printf("\n");
     fflush(stdout);
     Log("****************** compile bytes code end **************************");
 
