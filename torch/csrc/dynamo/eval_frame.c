@@ -900,13 +900,13 @@ static PyObject* _custom_eval_frame(
     PyCodeObject* code = CacheEntry_get_code(new_cache_entry);
     Log("************ start run frame %s  ***********", get_frame_name(frame));
     Log("****************** user bytes code start  **************************");
-    std::cout << "bytes:";
+    printf("bytes:");
     char* bytes = PyBytes_AsString(PyFrame_GetCode(frame)->co_code);
     size_t size = PyBytes_Size(PyFrame_GetCode(frame)->co_code);
     for (size_t i = 0; i < size; ++i) {
-      std::cout << (unsigned int)(unsigned char)(bytes[i]) << "\t";
+      printf("%c\t", (unsigned int)(unsigned char)(bytes[i]));
     }
-    std::cout << std::endl;
+    printf("\n");
     fflush(stdout);
     Log("****************** user bytes code end  **************************");
     Log("****************** compile bytes code start **************************");
