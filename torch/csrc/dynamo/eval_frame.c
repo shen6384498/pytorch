@@ -904,7 +904,7 @@ static PyObject* _custom_eval_frame(
     char* bytes = PyBytes_AsString(PyFrame_GetCode(frame)->co_code);
     size_t size = PyBytes_Size(PyFrame_GetCode(frame)->co_code);
     for (size_t i = 0; i < size; ++i) {
-      printf("%c\t", (unsigned int)(unsigned char)(bytes[i]));
+      printf("%u\t", (unsigned int)(unsigned char)(bytes[i]));
     }
     printf("\n");
     fflush(stdout);
