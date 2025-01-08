@@ -901,20 +901,20 @@ static PyObject* _custom_eval_frame(
     Log("************ start run frame %s  ***********", get_frame_name(frame));
     Log("****************** user bytes code start  **************************");
     printf("bytes:");
-    char* bytes = PyBytes_AsString(PyFrame_GetCode(frame)->co_code);
-    size_t size = PyBytes_Size(PyFrame_GetCode(frame)->co_code);
-    for (size_t i = 0; i < size; ++i) {
-      printf("%u\t", (unsigned int)(unsigned char)(bytes[i]));
+    char* user_bytes = PyBytes_AsString(PyFrame_GetCode(frame)->co_code);
+    size_t user_size = PyBytes_Size(PyFrame_GetCode(frame)->co_code);
+    for (size_t i = 0; i < user_size; ++i) {
+      printf("%u\t", (unsigned int)(unsigned char)(user_bytes[i]));
     }
     printf("\n");
     fflush(stdout);
     Log("****************** user bytes code end  **************************");
     Log("****************** compile bytes code start **************************");
     printf("bytes:");
-    char* bytes = PyBytes_AsString(code->co_code);
-    size_t size = PyBytes_Size(code->co_code);
-    for (size_t i = 0; i < size; ++i) {
-      printf("%u\t", (unsigned int)(unsigned char)(bytes[i]));
+    char* compile_bytes = PyBytes_AsString(code->co_code);
+    size_t compile_size = PyBytes_Size(code->co_code);
+    for (size_t i = 0; i < compile_size; ++i) {
+      printf("%u\t", (unsigned int)(unsigned char)(compile_bytes[i]));
     }
     printf("\n");
     fflush(stdout);
